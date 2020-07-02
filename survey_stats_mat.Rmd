@@ -1,0 +1,48 @@
+---
+title: "stats for mat"
+author: "mdz"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+theme: cosmo
+---
+
+## Intro
+
+## Questions
+
+1.  "For Revision Class 1 (on Tuesday 6th August), did you:"
+
+2. "If you attended Revision Class 1, did you answer any questions aloud in front of the class?"
+
+3. "How comfortable did you feel to answer questions in Revision Class 1?"
+
+4. "How would you rate the usefulness of Revision Class 1 for understanding the topics covered?"
+
+5. "How would you rate your overall satisfaction with Revision Class 1?"
+
+6. "Any comments about Revision Class 1 and answering questions aloud during the class?"
+
+7. "For Revision Class 2 (Monday 26th August, using the Socrative App), did you:"
+
+8. "If you attended Revision Class 2, did you use the Socrative App to answer any questions?"
+
+9. "How comfortable did you feel to answer questions in Revision Class 2 using the Socrative App?"
+
+10. "How would you rate the usefulness of Revision Class 2 for understanding the topics covered?"
+
+11. "How would you rate your overall satisfaction with Revision Class 2?"
+
+12. "Any comments about Revision Class 2 and using the Socrative App?"
+
+13. "Overall, did you prefer Revision Class 1 (traditional method of answering questions aloud during the class), or Revision class 2 (using the Socrative App to answer questions)?"
+
+14. "For future revision classes, which method would you prefer to be used?"
+
+```{r,read}
+x <- read.csv("Revision Class Survey SLE346 T2 2019_September 12, 2019_11.26_for MZ fmt.csv")
+head(x)
+str(x)
+```
+
