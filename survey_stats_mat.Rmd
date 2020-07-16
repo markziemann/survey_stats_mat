@@ -8,6 +8,8 @@ output:
 theme: cosmo
 ---
 
+Source code: https://github.com/markziemann/survey_stats_mat
+
 ## Intro
 
 A survey based study into student preferences for a polling tool in revision lessons.
@@ -56,11 +58,19 @@ Below are the survey questions in the survey.
 
 #### Q5. "How would you rate your overall satisfaction with Revision Class 1?"
 
-1. Extremely satisfied
+1. Very Satisfied
+
+2. Satisfied
+
+3. Somewhat Satisfied
 
 4. Neutral
 
-7. Extremely satisfied
+5. Somewhat Dissatisfied
+
+6. Dissatisfied
+
+7. Very Dissatisfied
 
 #### Q6. "Any comments about Revision Class 1 and answering questions aloud during the class?"
 
@@ -106,11 +116,19 @@ Qualitative answer in text box.
 
 #### Q11. "How would you rate your overall satisfaction with Revision Class 2?"
 
-1. Extremely satisfied
+1. Very Satisfied
+
+2. Satisfied
+
+3. Somewhat Satisfied
 
 4. Neutral
 
-7. Extremely satisfied
+5. Somewhat Dissatisfied
+
+6. Dissatisfied
+
+7. Very Dissatisfied
 
 #### Q12. "Any comments about Revision Class 2 and using the Socrative App?"
 
@@ -174,7 +192,7 @@ According to the t-test the participation was higher in class 2.
 
 An alternative approach would be to perform binary classify of students as non-participants or participants and then run a Fisher exact test.
 
-```{r , fisher test}
+```{r , fisher1}
 part1
 class1_nonparticipants = length(which(part1==0))
 class1_participants = length(which(part1!=0))
@@ -189,11 +207,11 @@ y
 fisher.test(y)
 
 # participation rate class 1 (%)
-p1 = my.table[1,2]/sum(my.table[1,])*100
+p1 = y[1,2]/sum(y[1,])*100
 p1
 
 # participation rate class 2 (%)
-p2 = my.table[2,2]/sum(my.table[2,]) *100
+p2 = y[2,2]/sum(y[2,]) *100
 p2
 
 # increase in participation (%)
@@ -206,7 +224,7 @@ Again the p-value is very small indicating a significant difference in participa
 
 This is a quantitative measure of discomfort so can use Wilcox test or t-test on ranks. Scale: 1 (extremely comf) to 7 (extremely uncomf).
 
-```{r}
+```{r, comfort}
 # class 1 comfort
 x$Q3
 comf <- x$Q3
@@ -217,7 +235,7 @@ comf <- gsub("Moderately comfortable","2",comf)
 comf <- gsub("Slightly comfortable","3",comf)
 comf <- gsub("Neither comfortable nor uncomfortable","4",comf)
 comf <- gsub("Slightly uncomfortable","5",comf)
-comf <- gsub("Moderately uncomfortable","5",comf)
+comf <- gsub("Moderately uncomfortable","6",comf)
 comf <- gsub("Extremely uncomfortable","7",comf)
 comf1 <- as.numeric(comf)
 comf1
@@ -233,7 +251,7 @@ comf <- gsub("Moderately comfortable","2",comf)
 comf <- gsub("Slightly comfortable","3",comf)
 comf <- gsub("Neither comfortable nor uncomfortable","4",comf)
 comf <- gsub("Slightly uncomfortable","5",comf)
-comf <- gsub("Moderately uncomfortable","5",comf)
+comf <- gsub("Moderately uncomfortable","6",comf)
 comf <- gsub("Extremely uncomfortable","7",comf)
 comf2 <- as.numeric(comf)
 comf2
@@ -248,10 +266,113 @@ t.test(comf1,comf2)
 
 ```
 
+This result indicates that participants were significantly more comfortable to participate with Socrative as compared to traditional/conventional method.
 
 ### How useful the classes were (Q4 v Q10) and 
 
-* the overall student satisfaction with the classes (Q5 v Q11).
+Same approach as above but the scale goes from 1 (extremely useful) to 5 (not useful at all).
+
+```{r, useful}
+# class 1 utility
+x$Q4
+us <- x$Q4
+us <- us[which(us!="")]
+us <- us[which(!is.na(us))]
+us <- gsub("Extremely useful","1",us)
+us <- gsub("Very useful","2",us)
+us <- gsub("Moderately useful","3",us)
+us <- gsub("Slightly useful","4",us)
+us <- gsub("Not at all useful","5",us)
+us1 <- as.numeric(us)
+us1
+mean(us1)
+
+# class 2 usort
+x$Q10
+us <- x$Q10
+us <- us[which(us!="")]
+us <- us[which(!is.na(us))]
+us <- gsub("Extremely useful","1",us)
+us <- gsub("Very useful","2",us)
+us <- gsub("Moderately useful","3",us)
+us <- gsub("Slightly useful","4",us)
+us <- gsub("Not at all useful","5",us)
+us2 <- as.numeric(us)
+us2
+mean(us2)
+
+par(mfrow=c(2,1), cex=0.8)
+hist(us1, xlim = c(1,5))
+hist(us2, xlim = c(1,5))
+
+wilcox.test(us1,us2)
+t.test(us1,us2)
+```
+Students ranked both classes between 1 and 2 for utility and there was no significant difference.
+
+### How satified students were with the classes (Q5 v Q11).
+
+Dissatisaction was on a scale of 1 (extremely satisfied) to 7 (extremely dissatisfied).
+
+1. Very Satisfied
+
+2. Satisfied
+
+3. Somewhat Satisfied
+
+4. Neutral
+
+5. Somewhat Dissatisfied
+
+6. Dissatisfied
+
+7. Very Dissatisfied
+
+```{r, satisfaction}
+# class 1 satisfaction
+x$Q5
+sat <- x$Q5
+sat <- sat[which(sat!="")]
+sat <- sat[which(!is.na(sat))]
+sat <- gsub("Very Satisfied","1",sat)
+sat <- gsub("Somewhat Satisfied","3",sat)
+sat <- gsub("Neutral","4",sat)
+sat <- gsub("Somewhat Dissatisfied","5",sat)
+sat <- gsub("Very Unsatisfied","7",sat)
+sat <- gsub("Dissatisfied","6",sat)
+sat <- gsub("Satisfied","3",sat)
+sat1 <- as.numeric(sat)
+sat1
+mean(sat1)
+
+# class 2 satisfaction
+x$Q11
+sat <- x$Q11
+sat <- sat[which(sat!="")]
+sat <- sat[which(!is.na(sat))]
+sat <- gsub("Very Satisfied","1",sat)
+sat <- gsub("Somewhat Satisfied","3",sat)
+sat <- gsub("Neutral","4",sat)
+sat <- gsub("Somewhat Dissatisfied","5",sat)
+sat <- gsub("Very Unsatisfied","7",sat)
+sat <- gsub("Dissatisfied","6",sat)
+sat <- gsub("Satisfied","3",sat)
+sat2 <- as.numeric(sat)
+sat2
+mean(sat2)
+
+par(mfrow=c(2,1), cex=0.8)
+hist(sat1,xlim=c(1,7))
+hist(sat2,xlim=c(1,7))
+
+wilcox.test(sat1,sat2)
+t.test(sat1,sat2)
+
+```
+
+These results indicate average satisfaction was higher in Class 2 however it was not statistically significant
+
+### Below parts are TODO
 
 I also tried to determine if there was any correlation between: 
 
@@ -265,3 +386,11 @@ Lastly, it would be good to see if there were any correlations between:
 the overall student satisfaction with the classes with their preferred style of class (Q13) or future class (Q14)
 
 I am not so worried about breaking the students down into in-person, watched recording or watched livestream; it could be interesting but I don’t think the numbers are anywhere big enough to get any useful data out of it.
+
+
+## Session information
+
+```{r,session}
+sessionInfo()
+```
+
