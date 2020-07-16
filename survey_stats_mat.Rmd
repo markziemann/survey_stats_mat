@@ -1,6 +1,6 @@
 ---
-title: "stats for mat"
-author: "mdz"
+title: "Stats analysis for Mat"
+author: "Mark Ziemann"
 date: "`r Sys.Date()`"
 output:
   html_document:
@@ -10,39 +10,258 @@ theme: cosmo
 
 ## Intro
 
+A survey based study into student preferences for a polling tool in revision lessons.
+
 ## Questions
 
-1.  "For Revision Class 1 (on Tuesday 6th August), did you:"
+Below are the survey questions in the survey.
 
-2. "If you attended Revision Class 1, did you answer any questions aloud in front of the class?"
+#### Q1.  "For Revision Class 1 (on Tuesday 6th August), did you:"
 
-3. "How comfortable did you feel to answer questions in Revision Class 1?"
+1. face-to-face
 
-4. "How would you rate the usefulness of Revision Class 1 for understanding the topics covered?"
+2. recording
 
-5. "How would you rate your overall satisfaction with Revision Class 1?"
+3. livestream
 
-6. "Any comments about Revision Class 1 and answering questions aloud during the class?"
+4. did not attend
 
-7. "For Revision Class 2 (Monday 26th August, using the Socrative App), did you:"
+#### Q2. "If you attended Revision Class 1, did you answer any questions aloud in front of the class?"
 
-8. "If you attended Revision Class 2, did you use the Socrative App to answer any questions?"
+1. Yes, 1
 
-9. "How comfortable did you feel to answer questions in Revision Class 2 using the Socrative App?"
+2. Yes >1
 
-10. "How would you rate the usefulness of Revision Class 2 for understanding the topics covered?"
+3. No
 
-11. "How would you rate your overall satisfaction with Revision Class 2?"
+#### Q3. "How comfortable did you feel to answer questions in Revision Class 1?"
 
-12. "Any comments about Revision Class 2 and using the Socrative App?"
+1. Extremely comfortable
 
-13. "Overall, did you prefer Revision Class 1 (traditional method of answering questions aloud during the class), or Revision class 2 (using the Socrative App to answer questions)?"
+4. Neutral
 
-14. "For future revision classes, which method would you prefer to be used?"
+7. Extremely comfortable
+
+#### Q4. "How would you rate the usefulness of Revision Class 1 for understanding the topics covered?"
+
+1. Extremely useful
+
+2. Very useful
+
+3. Moderately useful
+
+4. Slightly useful 
+
+5. Not useful at all
+
+#### Q5. "How would you rate your overall satisfaction with Revision Class 1?"
+
+1. Extremely satisfied
+
+4. Neutral
+
+7. Extremely satisfied
+
+#### Q6. "Any comments about Revision Class 1 and answering questions aloud during the class?"
+
+Qualitative answer in text box.
+
+#### Q7. "For Revision Class 2 (Monday 26th August, using the Socrative App), did you:"
+
+1. Face-to-face
+
+2. Recording
+
+3. Livestream
+
+4. Did not attend
+
+#### Q8. "If you attended Revision Class 2, did you use the Socrative App to answer any questions?"
+
+1. Yes, 1
+
+2. Yes >1
+
+3. No
+
+#### Q9. "How comfortable did you feel to answer questions in Revision Class 2 using the Socrative App?"
+
+1. Extremely comfortable
+
+4. Neutral
+
+7. Extremely comfortable
+
+#### Q10. "How would you rate the usefulness of Revision Class 2 for understanding the topics covered?"
+
+1. Extremely useful
+
+2. Very useful
+
+3. Moderately useful
+
+4. Slightly useful 
+
+5. Not useful at all
+
+#### Q11. "How would you rate your overall satisfaction with Revision Class 2?"
+
+1. Extremely satisfied
+
+4. Neutral
+
+7. Extremely satisfied
+
+#### Q12. "Any comments about Revision Class 2 and using the Socrative App?"
+
+Qualitative answer in text box.
+
+#### Q13. "Overall, did you prefer Revision Class 1 (traditional method of answering questions aloud during the class), or Revision class 2 (using the Socrative App to answer questions)?"
+
+1. Class 1 with traditional method
+
+2. Class 2 with Socrative
+
+#### Q14. "For future revision classes, which method would you prefer to be used?"
+
+1. Traditional method
+
+2. Socrative method
+
+## Load the data
 
 ```{r,read}
 x <- read.csv("Revision Class Survey SLE346 T2 2019_September 12, 2019_11.26_for MZ fmt.csv")
 head(x)
 str(x)
+
 ```
 
+## Matt's direction for statistical analysis
+
+For the comparison, I am mainly interested in the responses comparing Class 1 (verbal answers) with Class 2 (Socrative app).
+
+So in my original analyses I am mostly interested in comparing:
+
+### How many questions the students answered in each class (Q2 v Q8)
+
+The first approach to answer will be to use the three levels of participation and test with a Wilcox test and generate the confidence intervals with a t-test.
+
+```{r , participation}
+part <- x$Q2
+part <- part[which(part!="")]
+part <- gsub('Yes \\(more than one question\\)',"2",part)
+part <- gsub("No","0",part)
+part1 <- as.numeric(part)
+# participation for class 1
+part1
+part <- x$Q8
+part <- part[which(part!="")]
+part <- gsub('Yes \\(but only a few of the questions\\)',"1",part)
+part <- gsub('Yes \\(all or almost all of the questions\\)',"2",part)
+part <- gsub("No","0",part)
+part2 <- as.numeric(part)
+# participation for class 2
+part2
+par(mfrow=c(2,1), cex=0.8)
+hist(part1)
+hist(part2)
+wilcox.test(part1,part2)
+t.test(part1,part2)
+```
+
+According to the t-test the participation was higher in class 2.
+
+An alternative approach would be to perform binary classify of students as non-participants or participants and then run a Fisher exact test.
+
+```{r , fisher test}
+part1
+class1_nonparticipants = length(which(part1==0))
+class1_participants = length(which(part1!=0))
+class2_nonparticipants = length(which(part2==0))
+class2_participants = length(which(part2!=0))
+row1 <- c(class1_nonparticipants,class1_participants)
+row2 <- c(class2_nonparticipants,class2_participants)
+y <- rbind(row1,row2)
+rownames(y) <- c("class1","class2")
+colnames(y) <- c("non participation","participation")
+y
+fisher.test(y)
+
+# participation rate class 1 (%)
+p1 = my.table[1,2]/sum(my.table[1,])*100
+p1
+
+# participation rate class 2 (%)
+p2 = my.table[2,2]/sum(my.table[2,]) *100
+p2
+
+# increase in participation (%)
+p2/p1 * 100
+```
+
+Again the p-value is very small indicating a significant difference in participation rates.
+
+### How comfortable they were to answer questions (Q3 v Q9), 
+
+This is a quantitative measure of discomfort so can use Wilcox test or t-test on ranks. Scale: 1 (extremely comf) to 7 (extremely uncomf).
+
+```{r}
+# class 1 comfort
+x$Q3
+comf <- x$Q3
+comf <- comf[which(comf!="")]
+comf <- comf[which(!is.na(comf))]
+comf <- gsub("Extremely comfortable","1",comf)
+comf <- gsub("Moderately comfortable","2",comf)
+comf <- gsub("Slightly comfortable","3",comf)
+comf <- gsub("Neither comfortable nor uncomfortable","4",comf)
+comf <- gsub("Slightly uncomfortable","5",comf)
+comf <- gsub("Moderately uncomfortable","5",comf)
+comf <- gsub("Extremely uncomfortable","7",comf)
+comf1 <- as.numeric(comf)
+comf1
+mean(comf1)
+
+# class 2 comfort
+x$Q9
+comf <- x$Q9
+comf <- comf[which(comf!="")]
+comf <- comf[which(!is.na(comf))]
+comf <- gsub("Extremely comfortable","1",comf)
+comf <- gsub("Moderately comfortable","2",comf)
+comf <- gsub("Slightly comfortable","3",comf)
+comf <- gsub("Neither comfortable nor uncomfortable","4",comf)
+comf <- gsub("Slightly uncomfortable","5",comf)
+comf <- gsub("Moderately uncomfortable","5",comf)
+comf <- gsub("Extremely uncomfortable","7",comf)
+comf2 <- as.numeric(comf)
+comf2
+mean(comf2)
+
+par(mfrow=c(2,1), cex=0.8)
+hist(comf1)
+hist(comf2)
+
+wilcox.test(comf1,comf2)
+t.test(comf1,comf2)
+
+```
+
+
+### How useful the classes were (Q4 v Q10) and 
+
+* the overall student satisfaction with the classes (Q5 v Q11).
+
+I also tried to determine if there was any correlation between: 
+
+* how comfortable the students were answering the questions and either how useful, or how satisfied, they were with the classes (for either Class 1 or Class 2).
+
+Lastly, it would be good to see if there were any correlations between:
+
+* How comfortable the students were answering questions with their preferred style of class (Q13) or future class (Q14)
+
+* How useful the classes were with their preferred style of class (Q13) or future class (Q14)
+the overall student satisfaction with the classes with their preferred style of class (Q13) or future class (Q14)
+
+I am not so worried about breaking the students down into in-person, watched recording or watched livestream; it could be interesting but I don’t think the numbers are anywhere big enough to get any useful data out of it.
