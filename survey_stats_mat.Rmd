@@ -16,9 +16,9 @@ A survey based study into student preferences for a polling tool in revision les
 
 ## Questions
 
-Below are the survey questions in the survey.
+Below are the survey questions given to students.
 
-#### Q1.  "For Revision Class 1 (on Tuesday 6th August), did you:"
+#### Q1. "For Revision Class 1 (on Tuesday 6th August), did you:"
 
 1. face-to-face
 
@@ -159,36 +159,41 @@ str(x)
 
 For the comparison, I am mainly interested in the responses comparing Class 1 (verbal answers) with Class 2 (Socrative app).
 
-So in my original analyses I am mostly interested in comparing:
+I am not so worried about breaking the students down into in-person, watched recording or watched livestream; it could be interesting but I don’t think the numbers are anywhere big enough to get any useful data out of it.
 
-### How many questions the students answered in each class (Q2 v Q8)
+So in my original analyses I am mostly interested in the following questions:
+
+### Was there a difference in participation between traditional and socrative classes?
 
 The first approach to answer will be to use the three levels of participation and test with a Wilcox test and generate the confidence intervals with a t-test.
 
 ```{r , participation}
+# participation for class 1
 part <- x$Q2
 part <- part[which(part!="")]
 part <- gsub('Yes \\(more than one question\\)',"2",part)
 part <- gsub("No","0",part)
 part1 <- as.numeric(part)
-# participation for class 1
 part1
+
+# participation for class 2
 part <- x$Q8
 part <- part[which(part!="")]
 part <- gsub('Yes \\(but only a few of the questions\\)',"1",part)
 part <- gsub('Yes \\(all or almost all of the questions\\)',"2",part)
 part <- gsub("No","0",part)
 part2 <- as.numeric(part)
-# participation for class 2
 part2
+
 par(mfrow=c(2,1), cex=0.8)
 hist(part1)
 hist(part2)
+
 wilcox.test(part1,part2)
 t.test(part1,part2)
 ```
 
-According to the t-test the participation was higher in class 2.
+According to the t-test the participation was significantly higher in class 2.
 
 An alternative approach would be to perform binary classify of students as non-participants or participants and then run a Fisher exact test.
 
@@ -218,11 +223,14 @@ p2
 p2/p1 * 100
 ```
 
-Again the p-value is very small indicating a significant difference in participation rates.
+Again the p-value is very small indicating a significantly higher participation rate in the Socrative class.
 
-### How comfortable they were to answer questions (Q3 v Q9), 
+### Were students more comfortable to participate in answering questions in traditional or Socrative classes? 
 
-This is a quantitative measure of discomfort so can use Wilcox test or t-test on ranks. Scale: 1 (extremely comf) to 7 (extremely uncomf).
+I have inverted the values to make it a measure of comfort. 
+That means bigger numbers are "good".
+This can be used in Wilcox test or t-test on ranks. Scale: 1 (extremely uncomf) to 7 (extremely comf).
+
 
 ```{r, comfort}
 # class 1 comfort
@@ -230,13 +238,13 @@ x$Q3
 comf <- x$Q3
 comf <- comf[which(comf!="")]
 comf <- comf[which(!is.na(comf))]
-comf <- gsub("Extremely comfortable","1",comf)
-comf <- gsub("Moderately comfortable","2",comf)
-comf <- gsub("Slightly comfortable","3",comf)
+comf <- gsub("Extremely comfortable","7",comf)
+comf <- gsub("Moderately comfortable","6",comf)
+comf <- gsub("Slightly comfortable","5",comf)
 comf <- gsub("Neither comfortable nor uncomfortable","4",comf)
-comf <- gsub("Slightly uncomfortable","5",comf)
-comf <- gsub("Moderately uncomfortable","6",comf)
-comf <- gsub("Extremely uncomfortable","7",comf)
+comf <- gsub("Slightly uncomfortable","3",comf)
+comf <- gsub("Moderately uncomfortable","2",comf)
+comf <- gsub("Extremely uncomfortable","1",comf)
 comf1 <- as.numeric(comf)
 comf1
 mean(comf1)
@@ -246,13 +254,13 @@ x$Q9
 comf <- x$Q9
 comf <- comf[which(comf!="")]
 comf <- comf[which(!is.na(comf))]
-comf <- gsub("Extremely comfortable","1",comf)
-comf <- gsub("Moderately comfortable","2",comf)
-comf <- gsub("Slightly comfortable","3",comf)
+comf <- gsub("Extremely comfortable","7",comf)
+comf <- gsub("Moderately comfortable","6",comf)
+comf <- gsub("Slightly comfortable","5",comf)
 comf <- gsub("Neither comfortable nor uncomfortable","4",comf)
-comf <- gsub("Slightly uncomfortable","5",comf)
-comf <- gsub("Moderately uncomfortable","6",comf)
-comf <- gsub("Extremely uncomfortable","7",comf)
+comf <- gsub("Slightly uncomfortable","3",comf)
+comf <- gsub("Moderately uncomfortable","2",comf)
+comf <- gsub("Extremely uncomfortable","1",comf)
 comf2 <- as.numeric(comf)
 comf2
 mean(comf2)
@@ -268,9 +276,9 @@ t.test(comf1,comf2)
 
 This result indicates that participants were significantly more comfortable to participate with Socrative as compared to traditional/conventional method.
 
-### How useful the classes were (Q4 v Q10) and 
+### Did students perceive traditional or Socrative classes to be more useful?
 
-Same approach as above but the scale goes from 1 (extremely useful) to 5 (not useful at all).
+Same approach as above but the scale goes from 1 (not useful at all) to 5 (extremely useful).
 
 ```{r, useful}
 # class 1 utility
@@ -278,25 +286,25 @@ x$Q4
 us <- x$Q4
 us <- us[which(us!="")]
 us <- us[which(!is.na(us))]
-us <- gsub("Extremely useful","1",us)
-us <- gsub("Very useful","2",us)
+us <- gsub("Extremely useful","5",us)
+us <- gsub("Very useful","4",us)
 us <- gsub("Moderately useful","3",us)
-us <- gsub("Slightly useful","4",us)
-us <- gsub("Not at all useful","5",us)
+us <- gsub("Slightly useful","2",us)
+us <- gsub("Not at all useful","1",us)
 us1 <- as.numeric(us)
 us1
 mean(us1)
 
-# class 2 usort
+# class 2 utility
 x$Q10
 us <- x$Q10
 us <- us[which(us!="")]
 us <- us[which(!is.na(us))]
-us <- gsub("Extremely useful","1",us)
-us <- gsub("Very useful","2",us)
+us <- gsub("Extremely useful","5",us)
+us <- gsub("Very useful","4",us)
 us <- gsub("Moderately useful","3",us)
-us <- gsub("Slightly useful","4",us)
-us <- gsub("Not at all useful","5",us)
+us <- gsub("Slightly useful","2",us)
+us <- gsub("Not at all useful","1",us)
 us2 <- as.numeric(us)
 us2
 mean(us2)
@@ -308,25 +316,11 @@ hist(us2, xlim = c(1,5))
 wilcox.test(us1,us2)
 t.test(us1,us2)
 ```
-Students ranked both classes between 1 and 2 for utility and there was no significant difference.
+Students ranked Socrative classes higher but there was no significant difference.
 
-### How satified students were with the classes (Q5 v Q11).
+### Were students more satisfied with traditional or Socrative classes?
 
-Dissatisaction was on a scale of 1 (extremely satisfied) to 7 (extremely dissatisfied).
-
-1. Very Satisfied
-
-2. Satisfied
-
-3. Somewhat Satisfied
-
-4. Neutral
-
-5. Somewhat Dissatisfied
-
-6. Dissatisfied
-
-7. Very Dissatisfied
+Satisaction was on a scale of 1 (extremely dissatisfied) to 7 (extremely dissatisfied). 
 
 ```{r, satisfaction}
 # class 1 satisfaction
@@ -334,13 +328,13 @@ x$Q5
 sat <- x$Q5
 sat <- sat[which(sat!="")]
 sat <- sat[which(!is.na(sat))]
-sat <- gsub("Very Satisfied","1",sat)
-sat <- gsub("Somewhat Satisfied","3",sat)
+sat <- gsub("Very Satisfied","7",sat)
+sat <- gsub("Somewhat Satisfied","5",sat)
 sat <- gsub("Neutral","4",sat)
-sat <- gsub("Somewhat Dissatisfied","5",sat)
-sat <- gsub("Very Unsatisfied","7",sat)
-sat <- gsub("Dissatisfied","6",sat)
-sat <- gsub("Satisfied","3",sat)
+sat <- gsub("Somewhat Dissatisfied","3",sat)
+sat <- gsub("Very Unsatisfied","1",sat)
+sat <- gsub("Dissatisfied","2",sat)
+sat <- gsub("Satisfied","6",sat)
 sat1 <- as.numeric(sat)
 sat1
 mean(sat1)
@@ -350,13 +344,13 @@ x$Q11
 sat <- x$Q11
 sat <- sat[which(sat!="")]
 sat <- sat[which(!is.na(sat))]
-sat <- gsub("Very Satisfied","1",sat)
-sat <- gsub("Somewhat Satisfied","3",sat)
+sat <- gsub("Very Satisfied","7",sat)
+sat <- gsub("Somewhat Satisfied","5",sat)
 sat <- gsub("Neutral","4",sat)
-sat <- gsub("Somewhat Dissatisfied","5",sat)
-sat <- gsub("Very Unsatisfied","7",sat)
-sat <- gsub("Dissatisfied","6",sat)
-sat <- gsub("Satisfied","3",sat)
+sat <- gsub("Somewhat Dissatisfied","3",sat)
+sat <- gsub("Very Disatisfied","1",sat)
+sat <- gsub("Dissatisfied","2",sat)
+sat <- gsub("Satisfied","6",sat)
 sat2 <- as.numeric(sat)
 sat2
 mean(sat2)
@@ -370,23 +364,297 @@ t.test(sat1,sat2)
 
 ```
 
-These results indicate average satisfaction was higher in Class 2 however it was not statistically significant
+These results indicate average satisfaction was higher in Class 2 however it was not statistically significant.
 
-### Below parts are TODO
+### Does the level of comfort with answering questions correlate with perceived utility or satisfaction?
 
-I also tried to determine if there was any correlation between: 
+how comfortable the students were answering the questions and either how useful, or how satisfied, they were with the classes (for either Class 1 or Class 2).
 
-* how comfortable the students were answering the questions and either how useful, or how satisfied, they were with the classes (for either Class 1 or Class 2).
+Class 1 comfort
 
-Lastly, it would be good to see if there were any correlations between:
+```{r}
+# class 1: comfort = Q3, utility=Q4, satisfaction=Q5
+x$Q3
+comf <- x$Q3
+comf <- gsub("Extremely comfortable","7",comf)
+comf <- gsub("Moderately comfortable","6",comf)
+comf <- gsub("Slightly comfortable","5",comf)
+comf <- gsub("Neither comfortable nor uncomfortable","4",comf)
+comf <- gsub("Slightly uncomfortable","3",comf)
+comf <- gsub("Moderately uncomfortable","2",comf)
+comf1 <- gsub("Extremely uncomfortable","1",comf)
+comf1
 
-* How comfortable the students were answering questions with their preferred style of class (Q13) or future class (Q14)
+# class 1 utility
+x$Q4
+us <- x$Q4
+us <- us[which(us!="")]
+us <- us[which(!is.na(us))]
+us <- gsub("Extremely useful","5",us)
+us <- gsub("Very useful","4",us)
+us <- gsub("Moderately useful","3",us)
+us <- gsub("Slightly useful","2",us)
+us1 <- gsub("Not at all useful","1",us)
+us1
 
-* How useful the classes were with their preferred style of class (Q13) or future class (Q14)
-the overall student satisfaction with the classes with their preferred style of class (Q13) or future class (Q14)
+# class 1 satisfaction
+x$Q5
+sat <- x$Q5
+sat <- gsub("Very Satisfied","7",sat)
+sat <- gsub("Somewhat Satisfied","5",sat)
+sat <- gsub("Neutral","4",sat)
+sat <- gsub("Somewhat Dissatisfied","3",sat)
+sat <- gsub("Very Dissatisfied","1",sat)
+sat <- gsub("Dissatisfied","2",sat)
+sat1 <- gsub("Satisfied","6",sat)
+sat1
 
-I am not so worried about breaking the students down into in-person, watched recording or watched livestream; it could be interesting but I don’t think the numbers are anywhere big enough to get any useful data out of it.
+# check with another method because worries about NA values
+z <- cbind(comf1,us1,sat1)
+z <- apply(z,2,as.numeric)
+z <- z[!is.na(rowSums(z)),]
+z
 
+cor.test(z[,1],z[,2])
+cor.test(z[,1],z[,3])
+
+```
+
+This result shows that there is no significant correlation between comfort and either usefulness or satisfaction in class 1. Now I can do the same for class 2.
+
+```{r}
+# class 2: comfort = Q9, utility=Q10, satisfaction=Q11
+# class 1: comfort = Q3, utility=Q4, satisfaction=Q5
+x$Q9
+comf <- x$Q9
+comf <- gsub("Extremely comfortable","1",comf)
+comf <- gsub("Moderately comfortable","2",comf)
+comf <- gsub("Slightly comfortable","3",comf)
+comf <- gsub("Neither comfortable nor uncomfortable","4",comf)
+comf <- gsub("Slightly uncomfortable","5",comf)
+comf <- gsub("Moderately uncomfortable","6",comf)
+comf2 <- gsub("Extremely uncomfortable","7",comf)
+comf2
+
+# class 1 utility
+x$Q10
+us <- x$Q10
+us <- us[which(us!="")]
+us <- us[which(!is.na(us))]
+us <- gsub("Extremely useful","1",us)
+us <- gsub("Very useful","2",us)
+us <- gsub("Moderately useful","3",us)
+us <- gsub("Slightly useful","4",us)
+us2 <- gsub("Not at all useful","5",us)
+us2
+
+# class 1 satisfaction
+x$Q11
+sat <- x$Q11
+sat <- gsub("Very Satisfied","1",sat)
+sat <- gsub("Somewhat Satisfied","3",sat)
+sat <- gsub("Neutral","4",sat)
+sat <- gsub("Somewhat Dissatisfied","5",sat)
+sat <- gsub("Very Unsatisfied","7",sat)
+sat <- gsub("Dissatisfied","6",sat)
+sat1 <- gsub("Satisfied","2",sat)
+sat2
+
+# check with another method because worries about NA values
+z <- cbind(comf2,us2,sat2)
+z <- apply(z,2,as.numeric)
+z <- z[!is.na(rowSums(z)),]
+z
+
+cor.test(z[,1],z[,2])
+cor.test(z[,1],z[,3])
+```
+This result shows that there is no significant correlation between comfort and either usefulness or satisfaction in class 2 either.
+
+### Is there a correlation between How comfortable the students were answering questions with their preferred style of class (Q13) or future class (Q14)
+
+Not completely sure how to calculate this one.
+One solution would be to make a ratio of comfort for the two class types and then correlate the ratio with preferred class type.
+Responses to Q13 and Q14 were nearly identical so I will only analyse Q13 preferred class.
+
+```{r}
+# class 1 comfort
+x$Q3
+comf <- x$Q3
+comf <- gsub("Extremely comfortable","7",comf)
+comf <- gsub("Moderately comfortable","6",comf)
+comf <- gsub("Slightly comfortable","5",comf)
+comf <- gsub("Neither comfortable nor uncomfortable","4",comf)
+comf <- gsub("Slightly uncomfortable","3",comf)
+comf <- gsub("Moderately uncomfortable","2",comf)
+comf1 <- gsub("Extremely uncomfortable","1",comf)
+
+# class 2 comfort
+x$Q9
+comf <- x$Q9
+comf <- gsub("Extremely comfortable","7",comf)
+comf <- gsub("Moderately comfortable","6",comf)
+comf <- gsub("Slightly comfortable","5",comf)
+comf <- gsub("Neither comfortable nor uncomfortable","4",comf)
+comf <- gsub("Slightly uncomfortable","3",comf)
+comf <- gsub("Moderately uncomfortable","2",comf)
+comf2 <- gsub("Extremely uncomfortable","1",comf)
+
+x$Q13
+pref <- x$Q13
+pref <- gsub("Class 1 \\(traditional method\\)","1",pref)
+pref <- gsub("Class 2 \\(using Socrative\\)","2",pref)
+pref
+
+z <- cbind(comf1,comf2,pref)
+z <- apply(z,2,as.numeric)
+z <- z[!is.na(rowSums(z)),]
+z <- as.data.frame(z)
+# the ratio here is important because it is a negative scale
+z$rat <- z$comf2 - z$comf1
+z
+cor.test(z$rat,z$pref)
+```
+
+This result suggests there is a weak association between class comfort level and preference but it is not significant.
+
+### Is there a correlation between how useful the classes were and their preferred style of class (Q13) or future class (Q14)
+
+```{r}
+# class 1 usefulness
+x$Q4
+us <- x$Q4
+us <- gsub("Extremely useful","5",us)
+us <- gsub("Very useful","4",us)
+us <- gsub("Moderately useful","3",us)
+us <- gsub("Slightly useful","2",us)
+us1 <- gsub("Not at all useful","1",us)
+us1
+
+# class 2 usefulness
+x$Q10
+us <- x$Q10
+us <- gsub("Extremely useful","5",us)
+us <- gsub("Very useful","4",us)
+us <- gsub("Moderately useful","3",us)
+us <- gsub("Slightly useful","2",us)
+us2 <- gsub("Not at all useful","1",us)
+us2
+
+# preference
+x$Q13
+pref <- x$Q13
+pref <- gsub("Class 1 \\(traditional method\\)","1",pref)
+pref <- gsub("Class 2 \\(using Socrative\\)","2",pref)
+pref
+
+z <- cbind(us1,us2,pref)
+z <- apply(z,2,as.numeric)
+z <- z[!is.na(rowSums(z)),]
+z <- as.data.frame(z)
+# note the direction of the ratio
+z$rat <- z$us2 - z$us1
+z
+cor.test(z$rat,z$pref)
+```
+
+This result suggests there is a weak negative association between perceived usefullness and preference but it is not significant.
+
+### Is there a correlation between student satisfaction with the classes with their preferred style of class (Q13) or future class (Q14)
+
+```{r}
+# class 1 satisfaction
+x$Q5
+sat <- x$Q5
+sat <- gsub("Very Satisfied","7",sat)
+sat <- gsub("Somewhat Satisfied","5",sat)
+sat <- gsub("Neutral","4",sat)
+sat <- gsub("Somewhat Dissatisfied","3",sat)
+sat <- gsub("Very Dissatisfied","1",sat)
+sat <- gsub("Dissatisfied","2",sat)
+sat1 <- gsub("Satisfied","6",sat)
+sat1
+
+# class 2 satisfaction
+x$Q11
+sat <- x$Q11
+sat <- gsub("Very Satisfied","7",sat)
+sat <- gsub("Somewhat Satisfied","5",sat)
+sat <- gsub("Neutral","4",sat)
+sat <- gsub("Somewhat Dissatisfied","3",sat)
+sat <- gsub("Very Dissatisfied","1",sat)
+sat <- gsub("Dissatisfied","2",sat)
+sat2 <- gsub("Satisfied","6",sat)
+sat2
+
+# preference
+x$Q13
+pref <- x$Q13
+pref <- gsub("Class 1 \\(traditional method\\)","1",pref)
+pref <- gsub("Class 2 \\(using Socrative\\)","2",pref)
+pref
+
+z <- cbind(sat1,sat2,pref)
+z <- apply(z,2,as.numeric)
+z <- z[!is.na(rowSums(z)),]
+z <- as.data.frame(z)
+# note the direction of the ratio
+z$rat <- z$sat2 - z$sat1
+z
+cor.test(z$rat,z$pref)
+
+```
+
+This result suggests there is a weak association between satisfaction and preference but it is not significant.
+
+### Is there an association between differential participation level and preferred class type?
+
+```{r}
+# participation for class 1
+part <- x$Q2
+part <- gsub('Yes \\(more than one question\\)',"2",part)
+part1 <- gsub("No","0",part)
+part1
+# participation for class 2
+part <- x$Q8
+part <- gsub('Yes \\(but only a few of the questions\\)',"1",part)
+part <- gsub('Yes \\(all or almost all of the questions\\)',"2",part)
+part2 <- gsub("No","0",part)
+part2
+
+# preference
+x$Q13
+pref <- x$Q13
+pref <- gsub("Class 1 \\(traditional method\\)","1",pref)
+pref <- gsub("Class 2 \\(using Socrative\\)","2",pref)
+pref <- as.numeric(pref)
+pref
+
+z <- cbind(part1,part2,pref)
+z <- apply(z,2,as.numeric)
+z <- z[!is.na(rowSums(z)),]
+z <- as.data.frame(z)
+
+# note the direction of the ratio
+z$rat <- z$part2 - z$part1
+z
+cor.test(z$rat,z$pref)
+```
+
+There was no clear association between participation level and the preferred class. 
+
+## Conclusions
+
+There was a massive difference in student participation between class types, with the Socrative app resulting in a much higher participation rate.
+Students were more comfortable using the Socrative app as compared to traditional/conventional methods.
+Traditional and socrative classes were viewed as useful with only a small difference between them. 
+When students passively attend class they may have a false sense of security because they lack chances to benchmark own performance with formative assessment.
+Similarly there was no significant difference in satisfaction between class types.
+There was no significant correlation between comfort with answering questions and perceived utility or satisfaction in either class.
+Students that participated more in class 2 as compared to class 1 tended to prefer Socrative over traditional methods (p=0.09).
+There was no correlation between differential utility and preference.
+There was no correlation between differential satisfaction and preference.
+While the simple comparisons gave a clear result, the correlation analyses likely require a larger sample size.
 
 ## Session information
 
