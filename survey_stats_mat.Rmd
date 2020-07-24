@@ -643,6 +643,164 @@ cor.test(z$rat,z$pref)
 
 There was no clear association between participation level and the preferred class. 
 
+### Is there an association between level of comfort and participation in Revision Class 1?
+
+Class 1 - level of comfort (Q3)
+
+Class 1 - participation (Q2) 
+
+```{r}
+# participation for class 1
+part <- x$Q2
+part <- gsub('Yes \\(more than one question\\)',"2",part)
+part <- gsub("No","0",part)
+part1 <- as.numeric(part)
+part1
+
+
+# class 1 comfort
+x$Q3
+comf <- x$Q3
+comf <- gsub("Extremely comfortable","7",comf)
+comf <- gsub("Moderately comfortable","6",comf)
+comf <- gsub("Slightly comfortable","5",comf)
+comf <- gsub("Neither comfortable nor uncomfortable","4",comf)
+comf <- gsub("Slightly uncomfortable","3",comf)
+comf <- gsub("Moderately uncomfortable","2",comf)
+comf <- gsub("Extremely uncomfortable","1",comf)
+comf1 <- as.numeric(comf)
+comf1
+
+z <- cbind(comf1,part1)
+z <- apply(z,2,as.numeric)
+z <- z[!is.na(rowSums(z)),]
+z <- as.data.frame(z)
+z
+cor.test(z$comf1,z$part1)
+```
+
+There is no correlation, likely because there was too little participation.
+
+### Is there an association between level of comfort and participation in Revision Class 2?
+
+Class 2 - level of comfort (Q9)
+
+Class 2 - participation (Q8) 
+
+```{r}
+# participation for class 2
+part <- x$Q8
+part <- gsub('Yes \\(but only a few of the questions\\)',"1",part)
+part <- gsub('Yes \\(all or almost all of the questions\\)',"2",part)
+part <- gsub("No","0",part)
+part2 <- as.numeric(part)
+part2
+
+# class 2 comfort
+x$Q9
+comf <- x$Q9
+comf <- gsub("Extremely comfortable","7",comf)
+comf <- gsub("Moderately comfortable","6",comf)
+comf <- gsub("Slightly comfortable","5",comf)
+comf <- gsub("Neither comfortable nor uncomfortable","4",comf)
+comf <- gsub("Slightly uncomfortable","3",comf)
+comf <- gsub("Moderately uncomfortable","2",comf)
+comf <- gsub("Extremely uncomfortable","1",comf)
+comf2 <- as.numeric(comf)
+comf2
+
+z <- cbind(comf2,part2)
+z <- apply(z,2,as.numeric)
+z <- z[!is.na(rowSums(z)),]
+z <- as.data.frame(z)
+z
+cor.test(z$comf2,z$part2)
+```
+
+There is a strong correlation between comfort level and participation (p=0.002).
+
+### Is there an association between usefulness and student satisfaction in Revision Class 1?
+
+Class 1 - usefulness (Q4)
+
+Class 1 - satisfaction (Q5) 
+
+```{r}
+# class 1 utility
+x$Q4
+us <- x$Q4
+us <- gsub("Extremely useful","5",us)
+us <- gsub("Very useful","4",us)
+us <- gsub("Moderately useful","3",us)
+us <- gsub("Slightly useful","2",us)
+us <- gsub("Not at all useful","1",us)
+us1 <- as.numeric(us)
+us1
+
+# class 1 satisfaction
+x$Q5
+sat <- x$Q5
+sat <- gsub("Very Satisfied","7",sat)
+sat <- gsub("Somewhat Satisfied","5",sat)
+sat <- gsub("Neutral","4",sat)
+sat <- gsub("Somewhat Dissatisfied","3",sat)
+sat <- gsub("Very Unsatisfied","1",sat)
+sat <- gsub("Dissatisfied","2",sat)
+sat <- gsub("Satisfied","6",sat)
+sat1 <- as.numeric(sat)
+sat1
+
+z <- cbind(us1,sat1)
+z <- apply(z,2,as.numeric)
+z <- z[!is.na(rowSums(z)),]
+z <- as.data.frame(z)
+z
+cor.test(z$us1,z$sat1)
+```
+
+There was a positive association between perceived utility and satisfaction (p=0.025).
+
+### Is there an association between usefulness and student satisfaction in Revision Class 1?
+
+Class 2 - usefulness (Q10)
+
+Class 2 - satisfaction (Q11) 
+
+```{r}
+# class 2 utility
+x$Q10
+us <- x$Q10
+us <- gsub("Extremely useful","5",us)
+us <- gsub("Very useful","4",us)
+us <- gsub("Moderately useful","3",us)
+us <- gsub("Slightly useful","2",us)
+us <- gsub("Not at all useful","1",us)
+us2 <- as.numeric(us)
+us2
+
+# class 2 satisfaction
+x$Q11
+sat <- x$Q11
+sat <- gsub("Very Satisfied","7",sat)
+sat <- gsub("Somewhat Satisfied","5",sat)
+sat <- gsub("Neutral","4",sat)
+sat <- gsub("Somewhat Dissatisfied","3",sat)
+sat <- gsub("Very Unsatisfied","1",sat)
+sat <- gsub("Dissatisfied","2",sat)
+sat <- gsub("Satisfied","6",sat)
+sat2 <- as.numeric(sat)
+sat2
+
+z <- cbind(us2,sat2)
+z <- apply(z,2,as.numeric)
+z <- z[!is.na(rowSums(z)),]
+z <- as.data.frame(z)
+z
+cor.test(z$us2,z$sat2)
+```
+
+There was a strong association between perceived utility and satisfaction (p=2.0e-8).
+
 ## Conclusions
 
 There was a massive difference in student participation between class types, with the Socrative app resulting in a much higher participation rate.
@@ -655,6 +813,8 @@ Students that participated more in class 2 as compared to class 1 tended to pref
 There was no correlation between differential utility and preference.
 There was no correlation between differential satisfaction and preference.
 While the simple comparisons gave a clear result, the correlation analyses likely require a larger sample size.
+Correlation analysis between level of comfort and participation shows no assocation in class 1 but strong association in class 2.
+Perceived utility was correlated with student satisfaction in both class 1 and 2.
 
 ## Session information
 
